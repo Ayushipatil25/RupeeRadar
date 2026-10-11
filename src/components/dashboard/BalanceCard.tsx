@@ -1,3 +1,4 @@
+import React from 'react';
 import { Wallet, Calendar, ArrowUpRight } from 'lucide-react';
 import { Card } from '../common/Card';
 import { Badge } from '../common/Badge';

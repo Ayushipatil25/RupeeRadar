@@ -251,15 +251,18 @@ export const TransactionsPage: React.FC = () => {
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#6F7C72]" />
             <input
-              type="text"
+              id="tx-search"
+              type="search"
               placeholder="Search by description or merchant..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search transactions"
               className="w-full pl-9 pr-4 py-2 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] placeholder-[#6F7C72] focus:outline-none focus:border-[#C8F169]/50"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6F7C72] hover:text-[#F2F5F0]"
               >
                 <X className="w-3.5 h-3.5" />
@@ -289,6 +292,7 @@ export const TransactionsPage: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
+              aria-label="Filter by category"
               className="px-3 py-2 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] focus:outline-none focus:border-[#C8F169]/50"
             >
               <option value="all">All Categories</option>
@@ -302,7 +306,8 @@ export const TransactionsPage: React.FC = () => {
             {/* Sort Dropdown */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              aria-label="Sort transactions"
               className="px-3 py-2 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] focus:outline-none focus:border-[#C8F169]/50"
             >
               <option value="newest">Day (Newest)</option>
@@ -320,6 +325,7 @@ export const TransactionsPage: React.FC = () => {
             </span>
             <button
               onClick={clearFilters}
+              aria-label="Reset all filters"
               className="text-[#C8F169] hover:underline font-medium text-xs flex items-center gap-1"
             >
               <X className="w-3.5 h-3.5" />
@@ -416,14 +422,14 @@ export const TransactionsPage: React.FC = () => {
                           <button
                             onClick={() => openEditModal(tx)}
                             className="p-1.5 rounded-lg text-[#6F7C72] hover:text-[#C8F169] hover:bg-[#1B241E] transition-colors"
-                            title="Edit transaction"
+                            aria-label={`Edit transaction: ${tx.title}`}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => setDeletingTxId(tx.id)}
                             className="p-1.5 rounded-lg text-[#6F7C72] hover:text-[#F08080] hover:bg-[#381B1B]/40 transition-colors"
-                            title="Delete transaction"
+                            aria-label={`Delete transaction: ${tx.title}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -491,14 +497,16 @@ export const TransactionsPage: React.FC = () => {
 
           {/* Description / Merchant */}
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="tx-title" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Description or Merchant *
             </label>
             <input
+              id="tx-title"
               type="text"
               placeholder="e.g. Metro Card, Grocery Store, Freelance Gig"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
+              maxLength={80}
               className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] placeholder-[#6F7C72] focus:outline-none focus:border-[#C8F169]/50"
               required
             />
@@ -507,7 +515,7 @@ export const TransactionsPage: React.FC = () => {
           {/* Amount & Day */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="tx-amount" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Amount (₹ INR) *
               </label>
               <div className="relative">
@@ -515,6 +523,7 @@ export const TransactionsPage: React.FC = () => {
                   ₹
                 </span>
                 <input
+                  id="tx-amount"
                   type="number"
                   step="any"
                   min="1"
@@ -528,10 +537,11 @@ export const TransactionsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="tx-day" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Simulation Day (1–30) *
               </label>
               <input
+                id="tx-day"
                 type="number"
                 min="1"
                 max={TOTAL_BUDGET_DAYS}
@@ -545,10 +555,11 @@ export const TransactionsPage: React.FC = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="tx-category" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Category
             </label>
             <select
+              id="tx-category"
               value={formCategory}
               onChange={(e) => setFormCategory(e.target.value as ExpenseCategory)}
               className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] focus:outline-none focus:border-[#C8F169]/50"
@@ -563,14 +574,16 @@ export const TransactionsPage: React.FC = () => {
 
           {/* Optional Note */}
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="tx-note" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Note (Optional)
             </label>
             <input
+              id="tx-note"
               type="text"
               placeholder="e.g. Shared split with roommate"
               value={formNote}
               onChange={(e) => setFormNote(e.target.value)}
+              maxLength={200}
               className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] placeholder-[#6F7C72] focus:outline-none focus:border-[#C8F169]/50"
             />
           </div>

@@ -53,6 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
               resetToDefault();
             }
           }}
+          aria-label="Reset demo data to default"
           className="flex items-center gap-1.5 text-xs text-[#A0ADA3] hover:text-[#F08080] hover:border-[#4D2424] hover:bg-[#381B1B]/40 px-2.5 py-1.5 rounded-lg border border-[#29352D] bg-[#151C18] transition-colors"
           title="Reset demo data"
         >

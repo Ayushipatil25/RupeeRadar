@@ -386,14 +386,16 @@ export const SavingsPage: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="goal-title" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Goal Name *
             </label>
             <input
+              id="goal-title"
               type="text"
               placeholder="e.g. Emergency Cushion, Course Tuition, Weekend Trip"
               value={goalTitle}
               onChange={(e) => setGoalTitle(e.target.value)}
+              maxLength={80}
               className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] placeholder-[#6F7C72] focus:outline-none focus:border-[#C8F169]/50"
               required
             />
@@ -401,7 +403,7 @@ export const SavingsPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="goal-target" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Target Amount (₹) *
               </label>
               <div className="relative">
@@ -409,6 +411,7 @@ export const SavingsPage: React.FC = () => {
                   ₹
                 </span>
                 <input
+                  id="goal-target"
                   type="number"
                   min="1"
                   step="any"
@@ -422,10 +425,11 @@ export const SavingsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="goal-day" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Target Day (1–30)
               </label>
               <input
+                id="goal-day"
                 type="number"
                 min="1"
                 max={TOTAL_BUDGET_DAYS}
@@ -437,7 +441,7 @@ export const SavingsPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="goal-saved" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Currently Saved Amount (₹)
             </label>
             <div className="relative">
@@ -445,6 +449,7 @@ export const SavingsPage: React.FC = () => {
                 ₹
               </span>
               <input
+                id="goal-saved"
                 type="number"
                 min="0"
                 step="any"
@@ -503,7 +508,7 @@ export const SavingsPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="deposit-amount" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Deposit Amount (₹ INR) *
             </label>
             <div className="relative">
@@ -511,6 +516,7 @@ export const SavingsPage: React.FC = () => {
                 ₹
               </span>
               <input
+                id="deposit-amount"
                 type="number"
                 min="1"
                 step="any"

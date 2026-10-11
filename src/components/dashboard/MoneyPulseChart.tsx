@@ -13,6 +13,45 @@ import { FinancialSummary, Transaction } from '../../types';
 import { formatINR, calculateTrendHistoryAndProjection } from '../../utils/financial';
 import { Activity } from 'lucide-react';
 
+interface TooltipPayload {
+  value: number;
+  payload: {
+    label: string;
+    actual: number | null;
+    projected: number | null;
+  };
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const dataPoint = payload[0].payload;
+    return (
+      <div className="bg-[#1B241E] border border-[#29352D] p-3 rounded-xl shadow-xl text-xs space-y-1">
+        <p className="font-semibold text-[#F2F5F0]">{dataPoint.label}</p>
+        {dataPoint.actual !== null && (
+          <div className="flex items-center gap-2 text-[#C8F169]">
+            <span className="w-2 h-2 rounded-full bg-[#C8F169]" />
+            <span>Actual: {formatINR(dataPoint.actual)}</span>
+          </div>
+        )}
+        {dataPoint.projected !== null && dataPoint.actual === null && (
+          <div className="flex items-center gap-2 text-[#A0ADA3]">
+            <span className="w-2 h-2 rounded-full bg-[#A0ADA3]" />
+            <span>Forecast: {formatINR(dataPoint.projected)}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+
+
 interface MoneyPulseChartProps {
   summary: FinancialSummary;
   transactions: Transaction[];
@@ -24,31 +63,6 @@ export const MoneyPulseChart: React.FC<MoneyPulseChartProps> = ({
 }) => {
   const { currentDay } = summary;
   const chartData = calculateTrendHistoryAndProjection(summary, transactions);
-
-  // Custom dark tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const dataPoint = payload[0].payload;
-      return (
-        <div className="bg-[#1B241E] border border-[#29352D] p-3 rounded-xl shadow-xl text-xs space-y-1">
-          <p className="font-semibold text-[#F2F5F0]">{dataPoint.label}</p>
-          {dataPoint.actual !== null && (
-            <div className="flex items-center gap-2 text-[#C8F169]">
-              <span className="w-2 h-2 rounded-full bg-[#C8F169]" />
-              <span>Actual: {formatINR(dataPoint.actual)}</span>
-            </div>
-          )}
-          {dataPoint.projected !== null && dataPoint.actual === null && (
-            <div className="flex items-center gap-2 text-[#A0ADA3]">
-              <span className="w-2 h-2 rounded-full bg-[#A0ADA3]" />
-              <span>Forecast: {formatINR(dataPoint.projected)}</span>
-            </div>
-          )}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <Card className="bg-[#151C18] border-[#29352D] p-5 flex flex-col justify-between">
@@ -82,7 +96,11 @@ export const MoneyPulseChart: React.FC<MoneyPulseChartProps> = ({
       </div>
 
       {/* Chart Canvas */}
-      <div className="w-full h-64">
+      <div
+        className="w-full h-64"
+        role="img"
+        aria-label={`30-day balance trajectory chart. Current balance on Day ${currentDay}: ${formatINR(summary.currentBalance)}. Projected month-end: ${formatINR(summary.projectedMonthEnd)}.`}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}

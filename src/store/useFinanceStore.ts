@@ -470,7 +470,7 @@ export const useFinanceStore = create<FinanceStoreState>()(
     {
       name: 'rupeeradar-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0 || !persistedState) {
           return {
             startingBudget: DEFAULT_STARTING_BUDGET,

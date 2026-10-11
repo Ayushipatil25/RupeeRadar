@@ -309,7 +309,7 @@ export const BillsPage: React.FC = () => {
                       <button
                         onClick={() => openEditModal(bill)}
                         className="p-2 rounded-lg text-[#6F7C72] hover:text-[#C8F169] hover:bg-[#1B241E] transition-colors"
-                        title="Edit bill"
+                        aria-label={`Edit bill: ${bill.title}`}
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -317,7 +317,7 @@ export const BillsPage: React.FC = () => {
                       <button
                         onClick={() => setDeletingBillId(bill.id)}
                         className="p-2 rounded-lg text-[#6F7C72] hover:text-[#F08080] hover:bg-[#381B1B]/40 transition-colors"
-                        title="Delete bill"
+                        aria-label={`Delete bill: ${bill.title}`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -410,14 +410,16 @@ export const BillsPage: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+            <label htmlFor="bill-title" className="block text-xs font-medium text-[#A0ADA3] mb-1">
               Bill / Service Name *
             </label>
             <input
+              id="bill-title"
               type="text"
               placeholder="e.g. Wi-Fi Share, Spotify Student, Electric Bill"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
+              maxLength={80}
               className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] placeholder-[#6F7C72] focus:outline-none focus:border-[#C8F169]/50"
               required
             />
@@ -425,7 +427,7 @@ export const BillsPage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="bill-amount" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Amount (₹) *
               </label>
               <div className="relative">
@@ -433,6 +435,7 @@ export const BillsPage: React.FC = () => {
                   ₹
                 </span>
                 <input
+                  id="bill-amount"
                   type="number"
                   min="1"
                   step="any"
@@ -446,10 +449,11 @@ export const BillsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="bill-due-day" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Due Simulation Day (1–30) *
               </label>
               <input
+                id="bill-due-day"
                 type="number"
                 min="1"
                 max={TOTAL_BUDGET_DAYS}
@@ -463,12 +467,13 @@ export const BillsPage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="bill-type" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Commitment Type
               </label>
               <select
+                id="bill-type"
                 value={formType}
-                onChange={(e) => setFormType(e.target.value as any)}
+                onChange={(e) => setFormType(e.target.value as typeof formType)}
                 className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] focus:outline-none focus:border-[#C8F169]/50"
               >
                 <option value="bill">Utility / Bill</option>
@@ -477,12 +482,13 @@ export const BillsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+              <label htmlFor="bill-recurrence" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                 Recurrence
               </label>
               <select
+                id="bill-recurrence"
                 value={formRecurrence}
-                onChange={(e) => setFormRecurrence(e.target.value as any)}
+                onChange={(e) => setFormRecurrence(e.target.value as typeof formRecurrence)}
                 className="w-full px-3.5 py-2.5 bg-[#1B241E] border border-[#29352D] rounded-xl text-xs text-[#F2F5F0] focus:outline-none focus:border-[#C8F169]/50"
               >
                 <option value="monthly">Monthly</option>

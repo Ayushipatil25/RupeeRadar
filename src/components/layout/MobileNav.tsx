@@ -16,7 +16,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ currentTab, onTabChange })
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#101613] border-t border-[#29352D] z-30 px-2 py-1.5 flex items-center justify-around shadow-2xl backdrop-blur-md">
+    <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 bg-[#101613] border-t border-[#29352D] z-30 px-2 py-1.5 flex items-center justify-around shadow-2xl backdrop-blur-md">
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = currentTab === item.id;
@@ -24,6 +24,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({ currentTab, onTabChange })
           <button
             key={item.id}
             onClick={() => onTabChange(item.id)}
+            aria-current={isActive ? 'page' : undefined}
+            aria-label={item.label}
             className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[11px] font-medium transition-all ${
               isActive
                 ? 'text-[#C8F169] font-bold'

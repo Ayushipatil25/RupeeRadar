@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 space-y-1.5">
+      <nav aria-label="Main navigation" className="flex-1 space-y-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
@@ -60,6 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
+              aria-current={isActive ? 'page' : undefined}
               className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                 isActive
                   ? 'bg-[#123D2D] text-[#F2F5F0] border border-[#C8F169]/30 shadow-xs'
@@ -105,6 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
           </div>
           <button
             title="Account Settings"
+            aria-label="Account Settings"
             className="p-1.5 text-[#6F7C72] hover:text-[#A0ADA3] rounded-lg transition-colors"
           >
             <Settings className="w-3.5 h-3.5" />
@@ -118,6 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
               resetToDefault();
             }
           }}
+          aria-label="Reset demo data to default"
           className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-[#A0ADA3] hover:text-[#F08080] hover:bg-[#381B1B]/40 rounded-lg transition-colors border border-transparent hover:border-[#4D2424]"
           title="Reset sample data"
         >

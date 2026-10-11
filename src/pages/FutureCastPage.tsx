@@ -47,6 +47,54 @@ const QUICK_SCENARIOS = [
   { label: '₹2,000 New Gadget / Shoes', amount: 2000 },
 ];
 
+interface ChartTooltipPayload {
+  value?: number;
+  payload?: {
+    day: string;
+    baseline: number;
+    simulated: number;
+  };
+}
+
+interface CustomChartTooltipProps {
+  active?: boolean;
+  payload?: ChartTooltipPayload[];
+  label?: string;
+  showSimulated?: boolean;
+}
+
+const CustomChartTooltip: React.FC<CustomChartTooltipProps> = ({
+  active,
+  payload,
+  label,
+  showSimulated,
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#1B241E] border border-[#29352D] p-3 rounded-xl shadow-xl text-xs space-y-1.5">
+        <p className="font-semibold text-[#F2F5F0]">{label}</p>
+        <div className="flex items-center justify-between gap-4 text-[#C8F169]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#C8F169]" />
+            Baseline Runway:
+          </span>
+          <span className="font-bold">{formatINR(payload[0]?.value ?? 0)}</span>
+        </div>
+        {showSimulated && payload[1] && (
+          <div className="flex items-center justify-between gap-4 text-[#F2C66D]">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#F2C66D]" />
+              Simulated Runway:
+            </span>
+            <span className="font-bold">{formatINR(payload[1]?.value ?? 0)}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+
 interface FutureCastPageProps {
   onNavigateToTab?: (tab: string) => void;
 }
@@ -177,33 +225,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
     setIsSubmitting(false);
   };
 
-  // Custom Dark Tooltip for Comparison Chart
-  const CustomChartTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#1B241E] border border-[#29352D] p-3 rounded-xl shadow-xl text-xs space-y-1.5">
-          <p className="font-semibold text-[#F2F5F0]">{label}</p>
-          <div className="flex items-center justify-between gap-4 text-[#C8F169]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#C8F169]" />
-              Baseline Runway:
-            </span>
-            <span className="font-bold">{formatINR(payload[0]?.value)}</span>
-          </div>
-          {validAmount > 0 && payload[1] && (
-            <div className="flex items-center justify-between gap-4 text-[#F2C66D]">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#F2C66D]" />
-                Simulated Runway:
-              </span>
-              <span className="font-bold">{formatINR(payload[1]?.value)}</span>
-            </div>
-          )}
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   return (
     <div className="space-y-6 pb-24 md:pb-8">
@@ -252,6 +274,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
             </button>
             <button
               onClick={() => setConfirmedTxTitle(null)}
+              aria-label="Dismiss confirmation message"
               className="p-1.5 text-[#A0ADA3] hover:text-[#F2F5F0]"
             >
               <X className="w-4 h-4" />
@@ -326,11 +349,13 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
             {/* Form Fields */}
             <div className="space-y-3 pt-2">
               <div>
-                <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+                <label htmlFor="fc-title" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                   Purchase Name / Item *
                 </label>
                 <input
+                  id="fc-title"
                   type="text"
+                  maxLength={80}
                   placeholder="e.g. New Noise Cancelling Headphones, Team Dinner"
                   value={purchaseTitle}
                   onChange={(e) => {
@@ -343,7 +368,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+                  <label htmlFor="fc-amount" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                     Amount (₹ INR) *
                   </label>
                   <div className="relative">
@@ -351,6 +376,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                       ₹
                     </span>
                     <input
+                      id="fc-amount"
                       type="number"
                       min="1"
                       step="any"
@@ -366,10 +392,11 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+                  <label htmlFor="fc-category" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                     Category
                   </label>
                   <select
+                    id="fc-category"
                     value={purchaseCategory}
                     onChange={(e) =>
                       setPurchaseCategory(e.target.value as ExpenseCategory)
@@ -386,11 +413,13 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#A0ADA3] mb-1">
+                <label htmlFor="fc-note" className="block text-xs font-medium text-[#A0ADA3] mb-1">
                   Optional Note
                 </label>
                 <input
+                  id="fc-note"
                   type="text"
+                  maxLength={200}
                   placeholder="e.g. 50% discount during flash sale"
                   value={purchaseNote}
                   onChange={(e) => setPurchaseNote(e.target.value)}
@@ -756,7 +785,11 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
           </div>
         </div>
 
-        <div className="w-full h-64">
+        <div
+          className="w-full h-64"
+          role="img"
+          aria-label={`Trajectory comparison chart: Current projected month-end balance is ${formatINR(simulation.currentSummary.projectedMonthEnd)}, simulated post-purchase balance is ${formatINR(simulation.simulatedSummary.projectedMonthEnd)}`}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={simulation.simulatedTrendPoints}
@@ -782,7 +815,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                 axisLine={false}
                 tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
               />
-              <Tooltip content={<CustomChartTooltip />} />
+              <Tooltip content={<CustomChartTooltip showSimulated={validAmount > 0} />} />
 
               {/* Baseline trend */}
               <Line

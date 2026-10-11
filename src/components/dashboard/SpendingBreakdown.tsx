@@ -5,6 +5,36 @@ import { Transaction } from '../../types';
 import { formatINR, calculateCategoryBreakdown } from '../../utils/financial';
 import { PieChart as PieIcon, AlertCircle } from 'lucide-react';
 
+interface PieTooltipPayload {
+  payload: {
+    name: string;
+    amount: number;
+    percentage: number;
+  };
+}
+
+interface CustomPieTooltipProps {
+  active?: boolean;
+  payload?: PieTooltipPayload[];
+}
+
+const CustomPieTooltip: React.FC<CustomPieTooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const item = payload[0].payload;
+    return (
+      <div className="bg-[#1B241E] border border-[#29352D] p-2.5 rounded-xl shadow-xl text-xs space-y-1">
+        <p className="font-semibold text-[#F2F5F0]">{item.name}</p>
+        <p className="text-[#C8F169] font-medium">{formatINR(item.amount)}</p>
+        <p className="text-[#A0ADA3] text-[10px]">
+          {item.percentage.toFixed(1)}% of total spends
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+
 interface SpendingBreakdownProps {
   transactions: Transaction[];
 }
@@ -12,22 +42,6 @@ interface SpendingBreakdownProps {
 export const SpendingBreakdown: React.FC<SpendingBreakdownProps> = ({ transactions }) => {
   const chartData = calculateCategoryBreakdown(transactions);
   const totalExpense = chartData.reduce((sum, item) => sum + item.amount, 0);
-
-  const CustomPieTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const item = payload[0].payload;
-      return (
-        <div className="bg-[#1B241E] border border-[#29352D] p-2.5 rounded-xl shadow-xl text-xs space-y-1">
-          <p className="font-semibold text-[#F2F5F0]">{item.name}</p>
-          <p className="text-[#C8F169] font-medium">{formatINR(item.amount)}</p>
-          <p className="text-[#A0ADA3] text-[10px]">
-            {item.percentage.toFixed(1)}% of total spends
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <Card className="bg-[#151C18] border-[#29352D] p-5 flex flex-col justify-between">
@@ -53,7 +67,11 @@ export const SpendingBreakdown: React.FC<SpendingBreakdownProps> = ({ transactio
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
           {/* Donut Chart with Center Label */}
-          <div className="relative w-full h-52 flex items-center justify-center">
+          <div
+            className="relative w-full h-52 flex items-center justify-center"
+            role="img"
+            aria-label={`Spending breakdown donut chart. Total expenses: ${formatINR(totalExpense)}. ${chartData.map(i => `${i.name}: ${formatINR(i.amount)} (${i.percentage.toFixed(0)}%)`).join(', ')}.`}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
