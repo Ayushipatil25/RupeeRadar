@@ -264,7 +264,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
             See how today's choices affect your financial future.
           </h2>
           <p className="text-xs md:text-sm text-[#A0ADA3]">
-            Simulate hypothetical purchases without touching your real balance. Projections are deterministic estimates based on your ₹10k budget and Day {currentDay} burn rate.
+            Simulate hypothetical purchases with complete isolation — your actual ledger remains untouched until you confirm. Contrasts your 30-day baseline runway against the post-purchase trajectory while strictly protecting upcoming bills ({formatINR(currentSummary.committedBills)}) and locked savings ({formatINR(currentSummary.savedAmount)}).
           </p>
         </div>
 
@@ -514,7 +514,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                       Can you afford it?
                     </h3>
                     <p className="text-[11px] text-[#6F7C72]">
-                      Deterministic risk evaluation
+                      Evaluated against Safe Available Balance ({formatINR(currentSummary.availableBalance)})
                     </p>
                   </div>
                 </div>
@@ -800,7 +800,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                 Balance Trajectory Through Day 30
               </h3>
               <p className="text-[11px] text-[#6F7C72]">
-                Contrasting current projected runway vs simulated post-purchase trajectory
+                Contrasting current projected runway vs hypothetical post-purchase trajectory (in-memory simulation)
               </p>
             </div>
           </div>
