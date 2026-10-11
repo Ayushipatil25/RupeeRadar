@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Sparkles,
   ShieldCheck,
@@ -107,6 +107,8 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
     savingsGoals,
     addTransaction,
     getSummary,
+    setSimulation,
+    clearSimulation,
   } = useFinanceStore();
 
   const currentSummary = getSummary();
@@ -150,6 +152,27 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
     savingsGoals,
   ]);
 
+  // Keep store's simulation metadata synced without mutating balance or transactions
+  useEffect(() => {
+    if (validAmount > 0) {
+      setSimulation({
+        title: purchaseTitle.trim() || 'Simulated Purchase',
+        amount: validAmount,
+        category: purchaseCategory,
+        isActive: true,
+      });
+    } else {
+      clearSimulation();
+    }
+  }, [validAmount, purchaseTitle, purchaseCategory, setSimulation, clearSimulation]);
+
+  // Clean up simulation state when component unmounts
+  useEffect(() => {
+    return () => {
+      clearSimulation();
+    };
+  }, [clearSimulation]);
+
   const handleQuickScenario = (amount: number) => {
     setConfirmationError(null);
     setConfirmedTxTitle(null);
@@ -174,39 +197,40 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
     setPurchaseNote('');
     setConfirmationError(null);
     setConfirmedTxTitle(null);
+    clearSimulation();
   };
+
+  const isConfirmationAllowed = validAmount > 0 && simulation.isAffordable;
 
   const handleConfirmPurchase = () => {
     if (isSubmitting) return;
     setConfirmationError(null);
 
     // 1. Validate inputs
-    if (!purchaseTitle.trim()) {
-      setConfirmationError('Please provide a name or description for the purchase.');
-      return;
-    }
     if (validAmount <= 0) {
-      setConfirmationError('Please enter an amount greater than ₹0.');
+      setConfirmationError('Please enter an amount greater than ₹0 to simulate and confirm.');
       return;
     }
 
     // 2. Stale preview check against the latest live store state
     const latestSummary = getSummary();
-    if (validAmount > latestSummary.availableBalance) {
+    if (validAmount > latestSummary.availableBalance || !simulation.isAffordable) {
       setConfirmationError(
         `Affordability check failed: this purchase (${formatINR(
           validAmount
         )}) exceeds your current safe balance of ${formatINR(
           latestSummary.availableBalance
-        )}.`
+        )}. Confirmation is blocked to protect essential bills and savings.`
       );
       return;
     }
 
+    const titleToRecord = purchaseTitle.trim() || 'Simulated Purchase';
+
     // 3. Atomically record transaction exactly once
     setIsSubmitting(true);
     const success = addTransaction({
-      title: purchaseTitle.trim(),
+      title: titleToRecord,
       amount: validAmount,
       type: 'expense',
       category: purchaseCategory,
@@ -217,7 +241,7 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
     });
 
     if (success) {
-      setConfirmedTxTitle(purchaseTitle.trim());
+      setConfirmedTxTitle(titleToRecord);
       handleResetPreview();
     } else {
       setConfirmationError('Transaction could not be recorded. Check inputs.');
@@ -309,6 +333,16 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                 </button>
               )}
             </div>
+
+            {/* Live Affordability Warning when amount entered exceeds budget */}
+            {validAmount > 0 && !simulation.isAffordable && (
+              <div className="p-3 rounded-xl bg-[#331818] border border-[#4D2424] text-xs text-[#F08080] flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>
+                  <strong>Cannot confirm purchase:</strong> This purchase ({formatINR(validAmount)}) exceeds your current safe balance of {formatINR(currentSummary.availableBalance)} by {formatINR(validAmount - currentSummary.availableBalance)}. Reduce amount to enable confirmation.
+                </span>
+              </div>
+            )}
 
             {/* Error Message */}
             {confirmationError && (
@@ -432,7 +466,9 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
             <div className="pt-3 border-t border-[#29352D] flex flex-wrap items-center justify-between gap-3">
               <span className="text-[11px] text-[#6F7C72]">
                 {validAmount > 0
-                  ? `Simulating impact of ${formatINR(validAmount)} on Day ${currentDay}`
+                  ? simulation.isAffordable
+                    ? `Simulating impact of ${formatINR(validAmount)} on Day ${currentDay}`
+                    : `⚠️ Over budget by ${formatINR(validAmount - currentSummary.availableBalance)}`
                   : 'Enter an amount to simulate'}
               </span>
 
@@ -443,25 +479,21 @@ export const FutureCastPage: React.FC<FutureCastPageProps> = ({ onNavigateToTab 
                   size="sm"
                   onClick={handleResetPreview}
                   disabled={!purchaseAmount && !purchaseTitle}
+                  aria-label="Discard simulation preview"
                 >
-                  Clear
+                  <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                  Discard
                 </Button>
                 <Button
                   type="button"
-                  variant={simulation.isAffordable ? 'accent' : 'danger'}
+                  variant={isConfirmationAllowed ? 'accent' : 'secondary'}
                   size="sm"
                   onClick={handleConfirmPurchase}
-                  disabled={
-                    validAmount <= 0 ||
-                    !purchaseTitle.trim() ||
-                    !simulation.isAffordable ||
-                    isSubmitting
-                  }
+                  disabled={!isConfirmationAllowed || isSubmitting}
+                  aria-label="Confirm Purchase"
                 >
                   <Check className="w-4 h-4" />
-                  {simulation.isAffordable
-                    ? 'Confirm & Record Purchase'
-                    : 'Cannot Confirm (Over Budget)'}
+                  {isSubmitting ? 'Recording...' : 'Confirm Purchase'}
                 </Button>
               </div>
             </div>
