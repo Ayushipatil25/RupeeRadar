@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
             </h2>
             <span className="hidden sm:inline-block text-xs text-[#6F7C72]">·</span>
             <span className="hidden sm:inline-block text-xs text-[#A0ADA3]">
-              {getGreeting()}, Ayush
+              {getGreeting()}, Ayushi
             </span>
           </div>
           {subtitle && (

@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
               <User className="w-4 h-4" />
             </div>
             <div className="truncate">
-              <p className="text-xs font-medium text-[#F2F5F0] truncate">Ayush</p>
+              <p className="text-xs font-medium text-[#F2F5F0] truncate">Ayushi</p>
               <p className="text-[10px] text-[#6F7C72] truncate">₹10k Student Plan</p>
             </div>
           </div>
